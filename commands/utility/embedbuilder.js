@@ -161,19 +161,7 @@ module.exports = {
         embed.addFields(fields);
       }
 
-      // Store the embed in client cache before sending
-      if (!interaction.client.lastCreatedEmbed) {
-        interaction.client.lastCreatedEmbed = new Map();
-      }
-      interaction.client.lastCreatedEmbed.set(interaction.guildId, embed.toJSON());
-
       await interaction.channel.send({ embeds: [embed] });
-      if (!interaction.replied && !interaction.deferred) {
-        await interaction.reply({
-          content: 'Embed created successfully! Use `/embedbuilder save` to save it.',
-          ephemeral: true
-        });
-      }
     } catch (error) {
       console.error('Error creating embed:', error);
       await interaction.reply({
