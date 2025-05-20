@@ -143,7 +143,6 @@ module.exports = {
           ephemeral: true
         });
       }
-      const channel = interaction.options.getChannel('channel');
       const title = interaction.options.getString('title');
       const description = interaction.options.getString('description');
       const color = interaction.options.getString('color') || '#2F3136';
