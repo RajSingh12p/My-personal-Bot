@@ -67,49 +67,7 @@ module.exports = {
             .setRequired(true)
         )
     )
-    .addChannelOption(option => 
-      option
-        .setName('channel')
-        .setDescription('The channel to send the announcement to')
-        .setRequired(true)
-        .addChannelTypes(ChannelType.GuildText)
-    )
-    .addStringOption(option =>
-      option
-        .setName('title')
-        .setDescription('The title of the announcement')
-        .setRequired(true)
-    )
-    .addStringOption(option =>
-      option
-        .setName('description')
-        .setDescription('The main content of the announcement')
-        .setRequired(true)
-    )
-    .addStringOption(option =>
-      option
-        .setName('color')
-        .setDescription('The color of the embed (hex code)')
-        .setRequired(false)
-    )
-    .addStringOption(option =>
-      option
-        .setName('thumbnail')
-        .setDescription('URL of the thumbnail image')
-        .setRequired(false)
-    )
-    .addStringOption(option =>
-      option
-        .setName('image')
-        .setDescription('URL of the main image')
-        .setRequired(false)
-    )
-    .addStringOption(option =>
-      option
-        .setName('footer')
-        .setDescription('Footer text for the announcement')
-        .setRequired(false)
-    )
+    
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 
   async execute(interaction) {
