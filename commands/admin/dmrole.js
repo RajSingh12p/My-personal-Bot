@@ -57,6 +57,9 @@ module.exports = {
     const members = role.members;
     let successCount = 0;
     let failCount = 0;
+    let successfulMembers = [];
+    let failedMembers = [];
+    const totalMembers = members.size;
 
     // Add sender info if not anonymous
     if (!anonymous) {
@@ -71,18 +74,36 @@ module.exports = {
         await new Promise(resolve => setTimeout(resolve, delay));
         await member.send(personalizedMessage);
         successCount++;
+        successfulMembers.push(member.user.tag);
       } catch (error) {
         failCount++;
+        failedMembers.push(member.user.tag);
         console.error(`Failed to send DM to ${member.user.tag}: ${error}`);
       }
+
+      // Update progress after each attempt
+      const progress = `Progress: ${successCount + failCount}/${totalMembers}`;
+      await interaction.editReply({
+        content: `Sending messages... ${progress}`,
+        ephemeral: true
+      });
     }
 
     const summary = [
-      `Message sent!`,
-      `✅ Success: ${successCount}`,
-      `❌ Failed: ${failCount}`,
-      `⏱️ Delay: ${delay/1000}s`,
-      `🎭 Anonymous: ${anonymous}`
+      `📊 DM Notification Results`,
+      `\n📈 Statistics:`,
+      `• Total members: ${totalMembers}`,
+      `• ✅ Successfully DMed: ${successCount} members (${Math.round((successCount/totalMembers) * 100)}%)`,
+      `• ❌ Failed to DM: ${failCount} members (${Math.round((failCount/totalMembers) * 100)}%)`,
+      `\n✅ Successfully DMed members:`,
+      successfulMembers.length > 0 ? successfulMembers.slice(0, 10).join('\n') : 'None',
+      successfulMembers.length > 10 ? `...and ${successfulMembers.length - 10} more` : '',
+      `\n❌ Failed to DM members:`,
+      failedMembers.length > 0 ? failedMembers.slice(0, 10).join('\n') : 'None',
+      failedMembers.length > 10 ? `...and ${failedMembers.length - 10} more` : '',
+      `\n⚙️ Settings:`,
+      `• ⏱️ Delay: ${delay/1000}s`,
+      `• 🎭 Anonymous: ${anonymous}`
     ].join('\n');
 
     await interaction.editReply({
