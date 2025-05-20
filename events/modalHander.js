@@ -1,5 +1,5 @@
 const { Events, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
-const SavedEmbed = require('../models/saved-embed');
+const SavedEmbed = require('../models/SavedEmbed');
 
 module.exports = {
   name: Events.InteractionCreate,
