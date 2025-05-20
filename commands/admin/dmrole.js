@@ -1,5 +1,5 @@
 
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,33 +14,62 @@ module.exports = {
     .addStringOption(option =>
       option
         .setName('message')
-        .setDescription('The message to send')
+        .setDescription('The message to send. Use {user} for member mention')
         .setRequired(true)
+    )
+    .addIntegerOption(option =>
+      option
+        .setName('delay')
+        .setDescription('Delay between messages in seconds (1-30)')
+        .setMinValue(1)
+        .setMaxValue(30)
+    )
+    .addBooleanOption(option =>
+      option
+        .setName('preview')
+        .setDescription('Preview the message without sending')
+    )
+    .addBooleanOption(option =>
+      option
+        .setName('anonymous')
+        .setDescription('Send message without showing who sent it')
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     const role = interaction.options.getRole('role');
-    const message = interaction.options.getString('message');
+    let message = interaction.options.getString('message');
+    const delay = (interaction.options.getInteger('delay') || 2) * 1000;
+    const preview = interaction.options.getBoolean('preview') || false;
+    const anonymous = interaction.options.getBoolean('anonymous') || false;
     
     await interaction.deferReply({ ephemeral: true });
+
+    // Preview mode
+    if (preview) {
+      const previewMessage = message.replace('{user}', interaction.user.toString());
+      return await interaction.editReply({
+        content: `Preview of your message:\n\n${previewMessage}`,
+        ephemeral: true
+      });
+    }
 
     const members = role.members;
     let successCount = 0;
     let failCount = 0;
 
-    const embed = new EmbedBuilder()
-      .setColor('Blue')
-      .setTitle('Anonymous Message')
-      .setDescription(message)
-      .setTimestamp();
+    // Add sender info if not anonymous
+    if (!anonymous) {
+      message = `Message from ${interaction.user.tag}:\n\n${message}`;
+    }
 
     for (const [, member] of members) {
       try {
-        // Add random delay between messages (1-3 seconds)
-        await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 1000));
+        // Replace placeholders
+        const personalizedMessage = message.replace('{user}', member.toString());
         
-        await member.send({ embeds: [embed] });
+        await new Promise(resolve => setTimeout(resolve, delay));
+        await member.send(personalizedMessage);
         successCount++;
       } catch (error) {
         failCount++;
@@ -48,8 +77,16 @@ module.exports = {
       }
     }
 
+    const summary = [
+      `Message sent!`,
+      `✅ Success: ${successCount}`,
+      `❌ Failed: ${failCount}`,
+      `⏱️ Delay: ${delay/1000}s`,
+      `🎭 Anonymous: ${anonymous}`
+    ].join('\n');
+
     await interaction.editReply({
-      content: `Message sent!\nSuccess: ${successCount}\nFailed: ${failCount}`,
+      content: summary,
       ephemeral: true
     });
   },
