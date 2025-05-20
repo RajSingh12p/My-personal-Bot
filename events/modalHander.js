@@ -1,4 +1,5 @@
-const { Events, EmbedBuilder } = require('discord.js');
+const { Events, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
+const SavedEmbed = require('../models/saved-embed');
 
 module.exports = {
   name: Events.InteractionCreate,
@@ -42,7 +43,53 @@ module.exports = {
         embed.addFields(fields);
       }
 
-      await interaction.reply({ embeds: [embed] });
+      const saveModal = new ModalBuilder()
+        .setCustomId('embed_save')
+        .setTitle('Save Embed');
+
+      const nameInput = new TextInputBuilder()
+        .setCustomId('embed_name')
+        .setLabel('Name to save the embed as')
+        .setStyle(TextInputStyle.Short)
+        .setPlaceholder('Enter a name for this embed')
+        .setRequired(true)
+        .setMaxLength(50);
+
+      const row = new ActionRowBuilder().addComponents(nameInput);
+      saveModal.addComponents(row);
+
+      await interaction.showModal(saveModal);
+
+      try {
+        const saveModalSubmit = await interaction.awaitModalSubmit({
+          time: 60000,
+          filter: i => i.customId === 'embed_save'
+        });
+
+        const name = saveModalSubmit.fields.getTextInputValue('embed_name');
+
+        await SavedEmbed.create({
+          guildId: interaction.guildId,
+          name: name,
+          embed: embed.toJSON()
+        });
+
+        await interaction.channel.send({ embeds: [embed] });
+        await saveModalSubmit.reply({
+          content: `Embed created and saved as "${name}"!`,
+          ephemeral: true
+        });
+      } catch (error) {
+        if (error.code === 'INTERACTION_COLLECTOR_ERROR') {
+          await interaction.channel.send({ embeds: [embed] });
+          await interaction.followUp({
+            content: 'Embed created but not saved (save dialog timed out)',
+            ephemeral: true
+          });
+        } else {
+          throw error;
+        }
+      }
     } catch (error) {
       console.error('Error creating embed:', error);
       await interaction.reply({
