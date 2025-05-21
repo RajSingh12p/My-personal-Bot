@@ -64,12 +64,20 @@ module.exports = {
       .setRequired(false)
       .setMaxLength(1000);
 
+    const imageInput = new TextInputBuilder()
+      .setCustomId('embed_image')
+      .setLabel('Image/GIF URL (optional)')
+      .setStyle(TextInputStyle.Short)
+      .setPlaceholder('Enter an image or GIF URL')
+      .setRequired(false)
+      .setMaxLength(500);
+
     const rows = [
       new ActionRowBuilder().addComponents(titleInput),
       new ActionRowBuilder().addComponents(descriptionInput),
       new ActionRowBuilder().addComponents(colorInput),
       new ActionRowBuilder().addComponents(authorInput),
-      new ActionRowBuilder().addComponents(fieldsInput),
+      new ActionRowBuilder().addComponents(imageInput),
     ];
 
     modal.addComponents(...rows);
