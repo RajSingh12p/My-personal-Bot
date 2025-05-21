@@ -55,9 +55,12 @@ module.exports = {
       const files = Array.from(originalMessage.attachments.values());
       const embeds = originalMessage.embeds;
 
-      if (!content && files.length === 0 && embeds.length === 0) {
+      // Check if there's any content to announce
+      const hasContent = content?.trim() || files.length > 0 || embeds.length > 0;
+      
+      if (!hasContent) {
         return interaction.followUp({
-          content: '⚠️ The message is empty or contains unsupported content.',
+          content: '⚠️ Cannot announce an empty message. The message must contain text, files, or embeds.',
           ephemeral: true
         });
       }
