@@ -15,47 +15,9 @@ module.exports = {
       subcommand
         .setName('create')
         .setDescription('Create a new embed')
-    )
-    .addSubcommand(subcommand =>
-      subcommand
-        .setName('save')
-        .setDescription('Save the last created embed')
-        .addStringOption(option =>
-          option
-            .setName('name')
-            .setDescription('Name to save the embed as')
-            .setRequired(true)
-        )
     ),
 
   async execute(interaction) {
-    const subcommand = interaction.options.getSubcommand();
-
-    if (subcommand === 'save') {
-      const name = interaction.options.getString('name');
-      const SavedEmbed = require('../../models/SavedEmbed');
-
-      // Get the last embed from cache or temporary storage
-      const lastEmbed = interaction.client.lastCreatedEmbed?.get(interaction.guildId);
-
-      if (!lastEmbed) {
-        return interaction.reply({
-          content: 'No recent embed found to save. Please create an embed first.',
-          ephemeral: true
-        });
-      }
-
-      await SavedEmbed.create({
-        guildId: interaction.guildId,
-        name: name,
-        embed: lastEmbed
-      });
-
-      return interaction.reply({
-        content: `Embed saved as "${name}"`,
-        ephemeral: true
-      });
-    }
     const modal = new ModalBuilder()
       .setCustomId('embed_builder')
       .setTitle('Embed Builder');
@@ -160,9 +122,6 @@ module.exports = {
         });
         embed.addFields(fields);
       }
-
-      // Ensure no executor information is added to the embed.
-      // Example: embed.setFooter({ text: `Created by: ${interaction.user.tag}` }); - This should not be included
 
       await interaction.channel.send({ embeds: [embed] });
     } catch (error) {
