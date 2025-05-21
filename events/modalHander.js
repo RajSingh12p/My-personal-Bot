@@ -13,10 +13,13 @@ module.exports = {
       const color = interaction.fields.getTextInputValue('embed_color');
       const authorInput = interaction.fields.getTextInputValue('embed_author');
       const fieldsInput = interaction.fields.getTextInputValue('embed_fields');
+      const imageUrl = interaction.fields.getTextInputValue('embed_image');
 
       const embed = new EmbedBuilder()
         .setDescription(description)
         .setTimestamp();
+
+      if (imageUrl) embed.setImage(imageUrl);
 
       if (title) embed.setTitle(title);
       if (color) embed.setColor(color);
