@@ -32,7 +32,8 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 
   async execute(interaction) {
-    await interaction.deferReply({ ephemeral: true });
+    try {
+      await interaction.deferReply({ ephemeral: true });
 
     const messageId = interaction.options.getString('message_id');
     const targetChannel = interaction.options.getChannel('channel') || interaction.channel;
@@ -112,12 +113,13 @@ module.exports = {
         )
       });
 
-      await interaction.followUp({
+      return interaction.followUp({
         content: '✅ Announcement sent successfully!',
         ephemeral: true
       });
 
     } catch (error) {
+      console.error('Error in announce command:', error);
       console.error('Error in announce command:', error);
       await interaction.followUp({
         content: `❌ An error occurred: ${error.message}`,
