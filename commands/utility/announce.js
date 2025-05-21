@@ -1,5 +1,5 @@
 
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -23,6 +23,12 @@ module.exports = {
         .setDescription('Role to mention in the announcement')
         .setRequired(false)
     )
+    .addUserOption(option =>
+      option
+        .setName('user')
+        .setDescription('User to mention in the announcement')
+        .setRequired(false)
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 
   async execute(interaction) {
@@ -31,6 +37,7 @@ module.exports = {
     const messageId = interaction.options.getString('message_id');
     const targetChannel = interaction.options.getChannel('channel') || interaction.channel;
     const role = interaction.options.getRole('role');
+    const userToMention = interaction.options.getUser('user');
 
     try {
       // Try to fetch the message from the current channel
@@ -46,18 +53,60 @@ module.exports = {
 
       const content = originalMessage.content;
       const files = Array.from(originalMessage.attachments.values());
+      const embeds = originalMessage.embeds;
 
-      if (!content && files.length === 0) {
+      if (!content && files.length === 0 && embeds.length === 0) {
         return interaction.followUp({
           content: '⚠️ The message is empty or contains unsupported content.',
           ephemeral: true
         });
       }
 
-      const mention = role ? `${role.toString()}\n` : '';
+      const roleMention = role ? `${role.toString()} ` : '';
+      const userMention = userToMention ? `${userToMention.toString()} ` : '';
+      const mention = `${roleMention}${userMention}`.trim();
+      
+      // Create announcement embed
+      const announcementEmbed = new EmbedBuilder()
+        .setColor('#0099ff')
+        .setDescription(content || '')
+        .setTimestamp()
+        .setFooter({ 
+          text: `Originally sent in #${originalMessage.channel.name}`,
+        });
+
+      if (originalMessage.author) {
+        announcementEmbed.setAuthor({
+          name: originalMessage.author.tag,
+          iconURL: originalMessage.author.displayAvatarURL()
+        });
+      }
+
+      // Add jump link for admins
+      announcementEmbed.addFields({
+        name: 'Source',
+        value: `[Jump to original message](${originalMessage.url})`,
+        inline: true
+      });
+
+      // Handle attachments
+      if (files.length > 0) {
+        const firstFile = files[0];
+        if (firstFile.contentType?.startsWith('image/')) {
+          announcementEmbed.setImage(firstFile.url);
+        }
+      }
+
+      // Combine original embeds with our announcement embed
+      const allEmbeds = [announcementEmbed, ...embeds];
+
       await targetChannel.send({
-        content: `${mention}${content}`,
-        files: files
+        content: mention || null,
+        embeds: allEmbeds,
+        files: files.filter(file => 
+          !file.contentType?.startsWith('image/') || 
+          files.indexOf(file) !== 0
+        )
       });
 
       await interaction.followUp({
