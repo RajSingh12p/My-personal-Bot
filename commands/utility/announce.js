@@ -27,7 +27,8 @@ module.exports = {
       option.setName('mention_role')
         .setDescription('Mention a role in the reposted message')
         .setRequired(false))
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
+    // Remove default permission restriction to make it visible to all
+    ,
 
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
