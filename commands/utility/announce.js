@@ -1,4 +1,3 @@
-
 const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
@@ -26,18 +25,16 @@ module.exports = {
     .addRoleOption(option =>
       option.setName('mention_role')
         .setDescription('Mention a role in the reposted message')
-        .setRequired(false))
-    // Remove default permission restriction to make it visible to all
-    ,
+        .setRequired(false)),
 
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
-    
+
     // Check if user has exe.bot role or admin permissions
     const exeBotRole = interaction.guild.roles.cache.find(role => role.name === 'exe.bot');
     const hasExeBotRole = exeBotRole && interaction.member.roles.cache.has(exeBotRole.id);
     const isAdmin = interaction.member.permissions.has(PermissionFlagsBits.Administrator);
-    
+
     if (!hasExeBotRole && !isAdmin) {
       return interaction.editReply({
         content: '❌ You need the `exe.bot` role or Administrator permissions to use this command.',
@@ -80,7 +77,7 @@ module.exports = {
       const mentions = [];
       if (mentionUser) mentions.push(mentionUser.toString());
       if (mentionRole) mentions.push(mentionRole.toString());
-      
+
       const content = [
         mentions.join(' '),
         msg.content
@@ -95,7 +92,7 @@ module.exports = {
       await interaction.editReply({ 
         content: `✅ Message reposted successfully from ${sourceChannel} to ${targetChannel}!` 
       });
-      
+
     } catch (err) {
       console.error('Error in announce command:', err);
       await interaction.editReply({ 
