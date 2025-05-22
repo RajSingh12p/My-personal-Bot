@@ -31,6 +31,18 @@ module.exports = {
 
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
+    
+    // Check if user has exe.bot role or admin permissions
+    const exeBotRole = interaction.guild.roles.cache.find(role => role.name === 'exe.bot');
+    const hasExeBotRole = exeBotRole && interaction.member.roles.cache.has(exeBotRole.id);
+    const isAdmin = interaction.member.permissions.has(PermissionFlagsBits.Administrator);
+    
+    if (!hasExeBotRole && !isAdmin) {
+      return interaction.editReply({
+        content: '❌ You need the `exe.bot` role or Administrator permissions to use this command.',
+        ephemeral: true
+      });
+    }
 
     const messageId = interaction.options.getString('message_id');
     const sourceChannel = interaction.options.getChannel('source_channel');
