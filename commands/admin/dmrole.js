@@ -34,7 +34,8 @@ module.exports = {
         .setName('anonymous')
         .setDescription('Send message without showing who sent it')
     )
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    // Remove default permission restriction to make it visible to all
+    ,
 
   async execute(interaction) {
     // Check if user has exe.bot role or admin permissions
