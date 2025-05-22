@@ -1,4 +1,3 @@
-
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
@@ -33,16 +32,14 @@ module.exports = {
       option
         .setName('anonymous')
         .setDescription('Send message without showing who sent it')
-    )
-    // Remove default permission restriction to make it visible to all
-    ,
+    ),
 
   async execute(interaction) {
     // Check if user has exe.bot role or admin permissions
     const exeBotRole = interaction.guild.roles.cache.find(role => role.name === 'exe.bot');
     const hasExeBotRole = exeBotRole && interaction.member.roles.cache.has(exeBotRole.id);
     const isAdmin = interaction.member.permissions.has(PermissionFlagsBits.Administrator);
-    
+
     if (!hasExeBotRole && !isAdmin) {
       return interaction.reply({
         content: '❌ You need the `exe.bot` role or Administrator permissions to use this command.',
@@ -55,7 +52,7 @@ module.exports = {
     const delay = (interaction.options.getInteger('delay') || 2) * 1000;
     const preview = interaction.options.getBoolean('preview') || false;
     const anonymous = interaction.options.getBoolean('anonymous') || false;
-    
+
     await interaction.deferReply({ ephemeral: true });
 
     // Preview mode
@@ -83,7 +80,7 @@ module.exports = {
       try {
         // Replace placeholders
         const personalizedMessage = message.replace('{user}', member.toString());
-        
+
         await new Promise(resolve => setTimeout(resolve, delay));
         await member.send(personalizedMessage);
         successCount++;
