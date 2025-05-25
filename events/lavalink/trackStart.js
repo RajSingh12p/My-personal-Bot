@@ -5,11 +5,9 @@ const {
   ButtonStyle,
 } = require('discord.js');
 const { formatTime } = require('../../utils/utils');
-const { updateChannelStatus } = require('../../functions/channelStatusUpdater');
 module.exports = {
   name: 'trackStart',
   async execute(client, player, track) {
-    await updateChannelStatus(client, player, track);
     const channel = client.channels.cache.get(player.textChannelId);
     if (!channel) return;
 
