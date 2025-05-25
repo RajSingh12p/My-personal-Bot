@@ -1,6 +1,9 @@
+const { updateChannelStatus } = require('../../functions/channelStatusUpdater');
+
 module.exports = {
   name: 'queueEnd',
   async execute(client, player, track) {
+    await updateChannelStatus(client, player, null);
     const channel = client.channels.cache.get(player.textChannelId);
 
     if (channel) {
