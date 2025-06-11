@@ -32,6 +32,18 @@ module.exports = {
       option
         .setName('anonymous')
         .setDescription('Send message without showing who sent it')
+    )
+    .addStringOption(option =>
+      option
+        .setName('message_id')
+        .setDescription('ID of message to fetch and send (optional)')
+        .setRequired(false)
+    )
+    .addChannelOption(option =>
+      option
+        .setName('source_channel')
+        .setDescription('Channel to fetch the message from (required if message_id is provided)')
+        .setRequired(false)
     ),
 
   async execute(interaction) {
@@ -49,17 +61,64 @@ module.exports = {
 
     const role = interaction.options.getRole('role');
     let message = interaction.options.getString('message');
+    const messageId = interaction.options.getString('message_id');
+    const sourceChannel = interaction.options.getChannel('source_channel');
     const delay = (interaction.options.getInteger('delay') || 2) * 1000;
     const preview = interaction.options.getBoolean('preview') || false;
     const anonymous = interaction.options.getBoolean('anonymous') || false;
 
     await interaction.deferReply({ ephemeral: true });
 
+    // Validate message_id and source_channel options
+    if (messageId && !sourceChannel) {
+      return await interaction.editReply({
+        content: '❌ You must provide a source channel when using message_id.',
+        ephemeral: true
+      });
+    }
+
+    if (sourceChannel && !messageId) {
+      return await interaction.editReply({
+        content: '❌ You must provide a message_id when specifying a source channel.',
+        ephemeral: true
+      });
+    }
+
+    // Fetch message if message_id is provided
+    if (messageId && sourceChannel) {
+      try {
+        const fetchedMessage = await sourceChannel.messages.fetch(messageId);
+        
+        // Use the fetched message content instead of the provided message
+        message = fetchedMessage.content || 'No text content in the original message.';
+        
+        // If the fetched message has embeds, add their descriptions
+        if (fetchedMessage.embeds.length > 0) {
+          const embedDescriptions = fetchedMessage.embeds
+            .map(embed => embed.description || embed.title || 'Embed content')
+            .join('\n\n');
+          message += `\n\n${embedDescriptions}`;
+        }
+        
+        // If the fetched message has attachments, mention them
+        if (fetchedMessage.attachments.size > 0) {
+          const attachmentUrls = fetchedMessage.attachments.map(att => att.url).join('\n');
+          message += `\n\nAttachments:\n${attachmentUrls}`;
+        }
+      } catch (error) {
+        return await interaction.editReply({
+          content: '❌ Failed to fetch the message. Make sure the message ID and source channel are correct.',
+          ephemeral: true
+        });
+      }
+    }
+
     // Preview mode
     if (preview) {
       const previewMessage = message.replace('{user}', interaction.user.toString());
+      const previewInfo = messageId ? `\n\n*Message fetched from <#${sourceChannel.id}> (ID: ${messageId})*` : '';
       return await interaction.editReply({
-        content: `Preview of your message:\n\n${previewMessage}`,
+        content: `Preview of your message:\n\n${previewMessage}${previewInfo}`,
         ephemeral: true
       });
     }
@@ -113,7 +172,8 @@ module.exports = {
       failedMembers.length > 10 ? `...and ${failedMembers.length - 10} more` : '',
       `\n⚙️ Settings:`,
       `• ⏱️ Delay: ${delay/1000}s`,
-      `• 🎭 Anonymous: ${anonymous}`
+      `• 🎭 Anonymous: ${anonymous}`,
+      messageId ? `• 📨 Source: <#${sourceChannel.id}> (Message ID: ${messageId})` : ''
     ].join('\n');
 
     await interaction.editReply({
