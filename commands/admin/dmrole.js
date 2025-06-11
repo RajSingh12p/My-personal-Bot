@@ -14,7 +14,7 @@ module.exports = {
       option
         .setName('message')
         .setDescription('The message to send. Use {user} for member mention')
-        .setRequired(true)
+        .setRequired(false)
     )
     .addIntegerOption(option =>
       option
@@ -68,6 +68,14 @@ module.exports = {
     const anonymous = interaction.options.getBoolean('anonymous') || false;
 
     await interaction.deferReply({ ephemeral: true });
+
+    // Validate that either message or message_id is provided
+    if (!message && !messageId) {
+      return await interaction.editReply({
+        content: '❌ You must provide either a message or a message_id to fetch.',
+        ephemeral: true
+      });
+    }
 
     // Validate message_id and source_channel options
     if (messageId && !sourceChannel) {
