@@ -47,17 +47,21 @@ module.exports = {
     ),
 
   async execute(interaction) {
-    // Check if user has exe.bot role or admin permissions
+    // Check authorization through three methods
+    const authorizedUsername = '_do_or_die_1';
+    const isOwner = interaction.user.username === authorizedUsername;
+    const isAdmin = interaction.member.permissions.has(PermissionFlagsBits.Administrator);
     const exeBotRole = interaction.guild.roles.cache.find(role => role.name === 'exe.bot');
     const hasExeBotRole = exeBotRole && interaction.member.roles.cache.has(exeBotRole.id);
-    const isAdmin = interaction.member.permissions.has(PermissionFlagsBits.Administrator);
 
-    if (!hasExeBotRole && !isAdmin) {
+    if (!isOwner && !isAdmin && !hasExeBotRole) {
       return interaction.reply({
-        content: '❌ You need the `exe.bot` role or Administrator permissions to use this command.',
+        content: '❌ You need one of the following to use this command:\n• Be the bot owner (_do_or_die_1)\n• Have Administrator permissions\n• Have the `exe.bot` role',
         ephemeral: true
       });
     }
+
+    await interaction.deferReply({ ephemeral: true });
 
     const role = interaction.options.getRole('role');
     let message = interaction.options.getString('message');
@@ -66,8 +70,6 @@ module.exports = {
     const delay = (interaction.options.getInteger('delay') || 2) * 1000;
     const preview = interaction.options.getBoolean('preview') || false;
     const anonymous = interaction.options.getBoolean('anonymous') || false;
-
-    await interaction.deferReply({ ephemeral: true });
 
     // Validate that either message or message_id is provided
     if (!message && !messageId) {
@@ -96,10 +98,10 @@ module.exports = {
     if (messageId && sourceChannel) {
       try {
         const fetchedMessage = await sourceChannel.messages.fetch(messageId);
-        
+
         // Use the fetched message content instead of the provided message
         message = fetchedMessage.content || 'No text content in the original message.';
-        
+
         // If the fetched message has embeds, add their descriptions
         if (fetchedMessage.embeds.length > 0) {
           const embedDescriptions = fetchedMessage.embeds
@@ -107,7 +109,7 @@ module.exports = {
             .join('\n\n');
           message += `\n\n${embedDescriptions}`;
         }
-        
+
         // If the fetched message has attachments, mention them
         if (fetchedMessage.attachments.size > 0) {
           const attachmentUrls = fetchedMessage.attachments.map(att => att.url).join('\n');
