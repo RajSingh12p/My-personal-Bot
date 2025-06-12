@@ -95,13 +95,6 @@ module.exports = {
       })
       .setTimestamp();
 
-    const sourceCodeButton = new ButtonBuilder()
-      .setLabel('Source Code')
-      .setURL('https://discord.com/oauth2/authorize?client_id=${interaction.client.user.id}&permissions=8&scope=bot%20applications.commands')
-      .setStyle(ButtonStyle.Link);
-
-    const row = new ActionRowBuilder().addComponents(sourceCodeButton);
-
     await interaction.reply({ embeds: [botInfoEmbed], components: [row] });
   },
 };
