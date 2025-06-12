@@ -37,7 +37,7 @@ module.exports = {
       .addFields(
         {
           name: 'Developer',
-          value: '```elm\nNeppixel\n```',
+          value: '```elm\nᴅᴏ ᴏʀ ᴅɪᴇ\n```',
           inline: true,
         },
         {
@@ -97,7 +97,7 @@ module.exports = {
 
     const sourceCodeButton = new ButtonBuilder()
       .setLabel('Source Code')
-      .setURL('https://github.com/birajrai/lanya')
+      .setURL('https://discord.com/oauth2/authorize?client_id=${interaction.client.user.id}&permissions=8&scope=bot%20applications.commands')
       .setStyle(ButtonStyle.Link);
 
     const row = new ActionRowBuilder().addComponents(sourceCodeButton);
