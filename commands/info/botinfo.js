@@ -37,7 +37,7 @@ module.exports = {
       .addFields(
         {
           name: 'Developer',
-          value: '```elm\nNeppixel\n```',
+          value: '```elm\n! ᴅᴏ ᴏʀ ᴅɪᴇ\n```',
           inline: true,
         },
         {
