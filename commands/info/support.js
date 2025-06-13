@@ -12,7 +12,7 @@ module.exports = {
     .setDescription('Get the support server link.'),
 
   async execute(interaction) {
-    const supportServerLink = 'https://discord.gg/kAYpdenZ8b'; // Replace with your actual support server link
+    const supportServerLink = 'https://discord.gg/nfR6y2RjQf'; // Replace with your actual support server link
 
     const embed = new EmbedBuilder()
       .setTitle('🔹 Support Server')
