@@ -1,8 +1,8 @@
-module.exports = {More actions
+module.exports = {
   name: 'trackError',
   async execute(client, player, track, error) {
     const channel = client.channels.cache.get(player.textChannelId);
-    if (channel) {More actions
+    if (channel) {
       channel.send(
         `❌ There was an error playing the track: \`${track.info.title}\`. Skipping to the next track.`
       );
