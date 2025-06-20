@@ -23,6 +23,19 @@ const ticketSettingsSchema = new mongoose.Schema(
       default: '{category}-{count}',
       required: true,
     },
+    autoClose: { type: Boolean, default: false },
+    autoCloseTime: { type: Number, default: 24 }, // hours
+    transcriptEnabled: { type: Boolean, default: true },
+    ratingEnabled: { type: Boolean, default: false },
+    priorityEnabled: { type: Boolean, default: false },
+    customFields: [{
+      name: String,
+      required: Boolean,
+      type: { type: String, enum: ['text', 'number', 'boolean'] }
+    }],
+    maxTicketsPerUser: { type: Number, default: 3 },
+    dmOnCreate: { type: Boolean, default: false },
+    dmOnClose: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
