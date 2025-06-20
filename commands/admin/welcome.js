@@ -35,6 +35,74 @@ module.exports = {
       subcommand
         .setName('test')
         .setDescription('Preview the current welcome message')
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('embed')
+        .setDescription('Configure embed settings')
+        .addBooleanOption((option) =>
+          option
+            .setName('enabled')
+            .setDescription('Enable or disable embed')
+            .setRequired(true)
+        )
+        .addStringOption((option) =>
+          option
+            .setName('color')
+            .setDescription('Embed color (hex)')
+            .setRequired(false)
+        )
+        .addStringOption((option) =>
+          option
+            .setName('title')
+            .setDescription('Embed title')
+            .setRequired(false)
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('image')
+        .setDescription('Configure welcome image')
+        .addBooleanOption((option) =>
+          option
+            .setName('enabled')
+            .setDescription('Enable or disable image')
+            .setRequired(true)
+        )
+        .addStringOption((option) =>
+          option
+            .setName('url')
+            .setDescription('Image URL')
+            .setRequired(false)
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('role')
+        .setDescription('Set auto welcome role')
+        .addRoleOption((option) =>
+          option
+            .setName('role')
+            .setDescription('Role to give to new members')
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('dm')
+        .setDescription('Configure DM welcome')
+        .addBooleanOption((option) =>
+          option
+            .setName('enabled')
+            .setDescription('Enable or disable DM welcome')
+            .setRequired(true)
+        )
+        .addStringOption((option) =>
+          option
+            .setName('message')
+            .setDescription('DM welcome message')
+            .setRequired(false)
+        )
     ),
 
   async execute(interaction) {
