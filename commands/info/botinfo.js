@@ -97,7 +97,7 @@ module.exports = {
 
     const Button = new ButtonBuilder()
       .setLabel('Invite Link')
-      .setURL('https://discord.com/oauth2/authorize?client_id=${interaction.client.user.id}&permissions=8&scope=bot%20applications.commands')
+      .setURL(`https://discord.com/oauth2/authorize?client_id=${interaction.client.user.id}&permissions=8&scope=bot%20applications.commands`)
       .setStyle(ButtonStyle.Link);
 
     const row = new ActionRowBuilder().addComponents(Button);
