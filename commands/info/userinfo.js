@@ -30,11 +30,32 @@ module.exports = {
         },
         {
           name: 'Roles',
-          value:
-            member.roles.cache
+          value: (() => {
+            const roles = member.roles.cache
               .filter((role) => role.id !== interaction.guild.id)
-              .map((role) => role.toString())
-              .join(', ') || 'None',
+              .map((role) => role.toString());
+            
+            if (roles.length === 0) return 'None';
+            
+            let rolesString = roles.join(', ');
+            if (rolesString.length > 1024) {
+              const truncated = [];
+              let currentLength = 0;
+              
+              for (const role of roles) {
+                const roleWithSeparator = truncated.length === 0 ? role : `, ${role}`;
+                if (currentLength + roleWithSeparator.length > 1000) { // Leave room for "and X more"
+                  const remaining = roles.length - truncated.length;
+                  rolesString = truncated.join(', ') + ` and ${remaining} more`;
+                  break;
+                }
+                truncated.push(role);
+                currentLength += roleWithSeparator.length;
+              }
+            }
+            
+            return rolesString;
+          })(),
           inline: false,
         }
       )
