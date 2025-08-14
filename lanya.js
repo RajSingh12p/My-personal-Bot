@@ -9,12 +9,13 @@ app.listen(10000, () => {
   console.log('✅ Express server running on http://localhost:10000');
 });
 require('dotenv').config();
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, Collection } = require('discord.js');
 const { LavalinkManager } = require('lavalink-client');
 const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 const { autoPlayFunction } = require('./functions/autoPlay');
+const PrefixHandler = require('./handlers/prefixHandler');
 
 const client = new Client({
   intents: [
@@ -81,4 +82,17 @@ for (const file of handlerFiles) {
 console.log(
   global.styles.successColor(`✅ Successfully loaded ${counter} handlers`)
 );
+
+client.commands = new Collection();
+client.aliases = new Collection();
+client.slashCommands = new Collection();
+client.buttons = new Collection();
+client.selectMenus = new Collection();
+client.modals = new Collection();
+client.commandArray = [];
+
+// Initialize prefix handler
+client.prefixHandler = new PrefixHandler(client);
+client.prefixHandler.loadCommands();
+
 client.login(process.env.DISCORD_TOKEN);
