@@ -1,5 +1,4 @@
 const { Events } = require('discord.js');
-const PrefixHandler = require('../../handlers/prefixHandler');
 
 module.exports = {
   name: Events.MessageCreate,
