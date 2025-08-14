@@ -7,8 +7,6 @@ const {
 } = require('discord.js');
 const moment = require('moment');
 const os = require('os');
-const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const moment = require('moment');
 
 module.exports = {
   data: new SlashCommandBuilder()
