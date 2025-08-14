@@ -9,7 +9,7 @@ app.listen(10000, () => {
   console.log('✅ Express server running on http://localhost:10000');
 });
 require('dotenv').config();
-const { Client, GatewayIntentBits, Partials, Collection } = require('discord.js');
+const { Client, GatewayIntentBits } = require('discord.js');
 const { LavalinkManager } = require('lavalink-client');
 const fs = require('fs');
 const path = require('path');
@@ -62,7 +62,7 @@ const styles = {
   accentColor: chalk.bold.hex('#00FF7F'),
   secondaryColor: chalk.hex('#ADD8E6'),
   primaryColor: chalk.bold.hex('#FF1493'),
-  dividerColor: chalk.chalk.hex('#FFD700'),
+  dividerColor: chalk.hex('#FFD700'),
 };
 
 global.styles = styles;
@@ -81,13 +81,4 @@ for (const file of handlerFiles) {
 console.log(
   global.styles.successColor(`✅ Successfully loaded ${counter} handlers`)
 );
-
-client.commands = new Collection();
-client.aliases = new Collection();
-client.slashCommands = new Collection();
-client.buttons = new Collection();
-client.selectMenus = new Collection();
-client.modals = new Collection();
-client.commandArray = [];
-
 client.login(process.env.DISCORD_TOKEN);
