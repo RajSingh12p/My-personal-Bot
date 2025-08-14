@@ -15,7 +15,6 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 const { autoPlayFunction } = require('./functions/autoPlay');
-const PrefixHandler = require('./handlers/prefixHandler');
 
 const client = new Client({
   intents: [
@@ -63,7 +62,7 @@ const styles = {
   accentColor: chalk.bold.hex('#00FF7F'),
   secondaryColor: chalk.hex('#ADD8E6'),
   primaryColor: chalk.bold.hex('#FF1493'),
-  dividerColor: chalk.hex('#FFD700'),
+  dividerColor: chalk.chalk.hex('#FFD700'),
 };
 
 global.styles = styles;
@@ -90,13 +89,5 @@ client.buttons = new Collection();
 client.selectMenus = new Collection();
 client.modals = new Collection();
 client.commandArray = [];
-
-// Initialize prefix handler
-try {
-  client.prefixHandler = new PrefixHandler(client);
-  client.prefixHandler.loadCommands();
-} catch (error) {
-  console.error('❌ Failed to initialize prefix handler:', error.message);
-}
 
 client.login(process.env.DISCORD_TOKEN);
