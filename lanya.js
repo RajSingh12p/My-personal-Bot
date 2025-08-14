@@ -91,6 +91,9 @@ client.selectMenus = new Collection();
 client.modals = new Collection();
 client.commandArray = [];
 
+// Clear module cache for PrefixHandler to avoid any caching issues
+delete require.cache[require.resolve('./handlers/prefixHandler')];
+
 // Initialize prefix handler
 client.prefixHandler = new PrefixHandler(client);
 client.prefixHandler.loadCommands();
