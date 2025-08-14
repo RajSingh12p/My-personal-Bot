@@ -91,11 +91,12 @@ client.selectMenus = new Collection();
 client.modals = new Collection();
 client.commandArray = [];
 
-// Clear module cache for PrefixHandler to avoid any caching issues
-delete require.cache[require.resolve('./handlers/prefixHandler')];
-
 // Initialize prefix handler
-client.prefixHandler = new PrefixHandler(client);
-client.prefixHandler.loadCommands();
+try {
+  client.prefixHandler = new PrefixHandler(client);
+  client.prefixHandler.loadCommands();
+} catch (error) {
+  console.error('❌ Failed to initialize prefix handler:', error.message);
+}
 
 client.login(process.env.DISCORD_TOKEN);
